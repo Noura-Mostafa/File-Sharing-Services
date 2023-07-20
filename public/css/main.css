@@ -1,0 +1,12 @@
+/* main{
+    background: url(../imgs/desktop_fallback@3x.png);
+    background-position: center;
+    background-size: cover;
+} */
+
+main {
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+.modal-body{
+    box-shadow: 6px 6px #777 !important;
+}
