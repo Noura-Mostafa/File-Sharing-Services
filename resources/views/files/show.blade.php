@@ -6,7 +6,7 @@
 
   <h2 class="text-primary"> You're Done !</h2>
   <p class="text-secondary">Copy your download link</p>
-  <p class="border rounded p-3 mb-3">http://127.0.0.1:8000/files/{{$file->unique_link}}</p>
+  <p class="border rounded p-2 mb-3">http://127.0.0.1:8000/files/{{$file->unique_link}}</p>
   <strong>Test the Link : </strong>
   <a href="{{route('files.downloadPage' , $file->id)}}" class="text-primary">downloadPage/{{$file->id}}</a>
     <hr class="my-4">

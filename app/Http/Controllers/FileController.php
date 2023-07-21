@@ -6,8 +6,6 @@ use App\Models\File;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FileController extends Controller
 {
@@ -35,29 +33,20 @@ class FileController extends Controller
         if ($request->hasFile('file')) {
             $filename = $request->file('file')->getClientOriginalName();
             $path = $request->file('file')->store('/files', 'public');
-            $request->merge([
-                'filepath' => $path,
-                'title' => $filename,
-            ]);
         }
+
         $uniqueLink = Str::random(8);
         $expirationDate = now()->addDays(7);
 
         $file = new File;
-        $file->title = $filename;
+        $file->title = $request->post('title');
         $file->message = $request->post('message');
         $file->filepath = $path;
         $file->unique_link = $uniqueLink;
         $file->expiration = $expirationDate;
         $file->save($validated);
 
-
-
-        $fileLink = route('files.download', ['unique_link' => $uniqueLink]);
-        return redirect()->route('files.show', $file->id)
-            ->with([
-                'fileLink' => $fileLink,
-            ]);
+        return redirect()->route('files.show', $file->id);
     }
 
 
