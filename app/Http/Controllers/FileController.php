@@ -47,9 +47,6 @@ class FileController extends Controller
         $file->expiration = $expirationDate;
         $file->save($validated);
 
-        // $fileLink = route('files.download', ['unique_link' => $uniqueLink]);
-
-        
 
         return redirect()->route('files.show', $file->id);
     }
