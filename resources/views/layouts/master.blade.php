@@ -39,7 +39,7 @@
                         </li>
                     </ul>
                     <div class="d-lg-flex col-lg-3 justify-content-lg-end">
-                        <button class="btn btn-primary">Sign in</button>
+                        <a class="text-dark text-decoration-none" href="{{route('dashboard')}}">{{Auth::user()->name}}</a>
                     </div>
                 </div>
             </div>

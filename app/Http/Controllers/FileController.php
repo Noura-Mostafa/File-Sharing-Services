@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\File;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 
 class FileController extends Controller
@@ -46,6 +47,10 @@ class FileController extends Controller
         $file->expiration = $expirationDate;
         $file->save($validated);
 
+        // $fileLink = route('files.download', ['unique_link' => $uniqueLink]);
+
+        
+
         return redirect()->route('files.show', $file->id);
     }
 
@@ -53,18 +58,28 @@ class FileController extends Controller
     public function show(int $id)
     {
         $file = File::findOrFail($id);
+
+        $fileLink = URL::signedRoute('files.download' , [
+            'unique_link' => $file->unique_link,
+         ]) ;
+
         return View::make('files.show')
             ->with([
                 'id' => $id,
                 'file' => $file,
+                'fileLink' =>$fileLink,
             ]);
     }
 
 
     public function downloadPage($id)
     {   
-        $file = File::findOrFail($id);       
-        return View::make('files.download', compact('file'));
+        $file = File::findOrFail($id);  
+        $fileLink = URL::signedRoute('files.download' , [
+            'unique_link' => $file->unique_link,
+         ]);
+
+        return View::make('files.download', compact('file' , 'fileLink'));
     }
 
 
