@@ -59,9 +59,9 @@ class FileController extends Controller
     {
         $file = File::findOrFail($id);
 
-        $fileLink = URL::signedRoute('files.download' , [
+        $fileLink = URL::temporarySignedRoute('files.download' , now()->addHours(3) ,[
             'unique_link' => $file->unique_link,
-         ]) ;
+         ]);
 
         return View::make('files.show')
             ->with([
@@ -75,7 +75,8 @@ class FileController extends Controller
     public function downloadPage($id)
     {   
         $file = File::findOrFail($id);  
-        $fileLink = URL::signedRoute('files.download' , [
+
+        $fileLink = URL::temporarySignedRoute('files.download' , now()->addHours(3) ,[
             'unique_link' => $file->unique_link,
          ]);
 
