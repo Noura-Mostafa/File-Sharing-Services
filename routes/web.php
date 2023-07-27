@@ -35,8 +35,11 @@ Route::middleware('auth')->group(function () {
         ->name('files.downloadPage');
     Route::get('/files/{unique_link}', [FileController::class, 'download'])
         ->name('files.download');
+    Route::get('/files', [FileController::class, 'downloadedFiles'])
+        ->name('files.downloadedFiles');
+    Route::delete('/files/{id}', [FileController::class, 'destroy'])
+        ->name('files.destroy')->where('id', '\d+');;
 
-        
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

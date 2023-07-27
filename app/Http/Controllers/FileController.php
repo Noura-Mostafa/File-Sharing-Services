@@ -6,7 +6,10 @@ use App\Models\File;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Redirect;
 
 class FileController extends Controller
 {
@@ -32,8 +35,8 @@ class FileController extends Controller
         );
 
         if ($request->hasFile('file')) {
-            $filename = $request->file('file')->getClientOriginalName();
-            $path = $request->file('file')->store('/files', 'public');
+            $file = $request->file('file');
+            $path = $file->store('/files', 'public');
         }
 
         $uniqueLink = Str::random(8);
@@ -45,6 +48,7 @@ class FileController extends Controller
         $file->filepath = $path;
         $file->unique_link = $uniqueLink;
         $file->expiration = $expirationDate;
+        $file->user_id = Auth::user()->id;
         $file->save($validated);
 
 
@@ -56,7 +60,8 @@ class FileController extends Controller
     {
         $file = File::findOrFail($id);
 
-        $fileLink = URL::temporarySignedRoute('files.download' , now()->addHours(3) ,[
+        $fileLink = URL::temporarySignedRoute('files.downloadPage' , now()->addHours(3) ,[
+            'id' => $id,
             'unique_link' => $file->unique_link,
          ]);
 
@@ -90,6 +95,29 @@ class FileController extends Controller
         }
 
         return response()->download('storage/' . $file->filepath);
+    }
+
+    public function downloadedFiles()
+    {   
+        session()->get('success');
+        $files = File::orderBy('created_at', 'DESC')
+                      ->where('user_id' , '=' , Auth::id())
+                      ->get();  
+
+        return View::make('files.downloadedFiles' ,compact('files'));
+    }
+
+    public function destroy($id)
+    {
+        $file = File::findOrFail($id);
+
+        $file->delete();
+
+        if($file->filepath){
+            Storage::disk('public')->delete($file->filepath);
+        }
+
+        return Redirect::route('files.downloadedFiles')->with('success', 'File deleted');
     }
 
     }

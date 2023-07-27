@@ -3,7 +3,7 @@
 @section('content')
 
 
-<div class="modal-body p-5 w-25 m-auto mt-5 rounded bg-light">
+<div class="container p-5 w-50 m-auto  rounded bg-light">
   <h2 class="text-primary text-center">Upload your File and share a link!</h2>
   <hr class="my-4">
   <form class="" action="{{route('files.store')}}" method="post" enctype="multipart/form-data">
