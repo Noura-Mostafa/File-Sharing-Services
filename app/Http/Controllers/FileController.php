@@ -18,8 +18,6 @@ class FileController extends Controller
         return view('files.index');
     }
 
-
-
     public function store(Request $request)
     {
         $validated = $request->validate(
@@ -35,24 +33,30 @@ class FileController extends Controller
         );
 
         if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $path = $file->store('/files', 'public');
+            $file =  $request->file('file');
+            $filename = $file->getClientOriginalName();
+            $path = $file->storeAs('files', $filename);
         }
 
         $uniqueLink = Str::random(8);
         $expirationDate = now()->addDays(7);
 
         $file = new File;
-        $file->title = $request->post('title');
+        $file->title = $filename;
         $file->message = $request->post('message');
         $file->filepath = $path;
         $file->unique_link = $uniqueLink;
         $file->expiration = $expirationDate;
-        $file->user_id = Auth::user()->id;
+        if ($id = Auth::id()) {
+            $file->user_id = $id;
+        }
         $file->save($validated);
 
 
-        return redirect()->route('files.show', $file->id);
+        return redirect()->route('files.show', $file->id)
+            ->with([
+                'filename' => $filename,
+            ]);
     }
 
 
@@ -60,29 +64,29 @@ class FileController extends Controller
     {
         $file = File::findOrFail($id);
 
-        $fileLink = URL::temporarySignedRoute('files.downloadPage' , now()->addHours(3) ,[
+        $fileLink = URL::temporarySignedRoute('files.downloadPage', now()->addHours(3), [
             'id' => $id,
             'unique_link' => $file->unique_link,
-         ]);
+        ]);
 
         return View::make('files.show')
             ->with([
                 'id' => $id,
                 'file' => $file,
-                'fileLink' =>$fileLink,
+                'fileLink' => $fileLink,
             ]);
     }
 
 
     public function downloadPage($id)
-    {   
-        $file = File::findOrFail($id);  
+    {
+        $file = File::findOrFail($id);
 
-        $fileLink = URL::temporarySignedRoute('files.download' , now()->addHours(3) ,[
+        $fileLink = URL::temporarySignedRoute('files.download', now()->addHours(3), [
             'unique_link' => $file->unique_link,
-         ]);
+        ]);
 
-        return View::make('files.download', compact('file' , 'fileLink'));
+        return View::make('files.download', compact('file', 'fileLink'));
     }
 
 
@@ -94,17 +98,17 @@ class FileController extends Controller
             abort(404);
         }
 
-        return response()->download('storage/' . $file->filepath);
+        return Storage::download($file->filepath);
     }
 
     public function downloadedFiles()
-    {   
+    {
         session()->get('success');
         $files = File::orderBy('created_at', 'DESC')
-                      ->where('user_id' , '=' , Auth::id())
-                      ->get();  
+            ->where('user_id', '=', Auth::id())
+            ->get();
 
-        return View::make('files.downloadedFiles' ,compact('files'));
+        return View::make('files.downloadedFiles', compact('files'));
     }
 
     public function destroy($id)
@@ -113,12 +117,10 @@ class FileController extends Controller
 
         $file->delete();
 
-        if($file->filepath){
-            Storage::disk('public')->delete($file->filepath);
+        if ($file->filepath) {
+            Storage::disk('files')->delete($file->filepath);
         }
 
         return Redirect::route('files.downloadedFiles')->with('success', 'File deleted');
     }
-
-    }
-
+}

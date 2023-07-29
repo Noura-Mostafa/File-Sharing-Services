@@ -64,7 +64,10 @@
             <div class="dropdown">
                 <a href="#" class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="{{asset('/imgs/person.jpg')}}" alt="" width="32" height="32" class="rounded-circle me-2">
+
+                    @if(Auth::id())
                     <strong>{{Auth::user()->name}}</strong>
+                    @endif
                 </a>
                 <ul class="dropdown-menu text-small shadow">
                     <li><a class="dropdown-item" href="#">New project...</a></li>
