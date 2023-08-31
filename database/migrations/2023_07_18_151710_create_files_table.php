@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('message', 255)->nullable();
             $table->string('unique_link')->unique();
             $table->timestamp('expiration')->nullable();
+            $table->integer('download_count')->default(0);
             $table->foreignId('user_id')
                 ->nullable()
                 ->constrained()

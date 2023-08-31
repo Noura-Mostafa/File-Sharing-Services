@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\File;
 use Illuminate\Support\Str;
+use App\Events\DownloadFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Auth;
@@ -90,7 +91,7 @@ class FileController extends Controller
     }
 
 
-    public function download($uniqueLink)
+    public function download(Request $request , $uniqueLink)
     {
         $file = File::where('unique_link', $uniqueLink)->first();
 
@@ -98,7 +99,12 @@ class FileController extends Controller
             abort(404);
         }
 
+        event(new DownloadFile($file));
+
+
         return Storage::download($file->filepath);
+
+
     }
 
     public function downloadedFiles()
