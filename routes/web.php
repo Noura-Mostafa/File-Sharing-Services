@@ -16,7 +16,7 @@ use App\Http\Controllers\ProfileController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('files.index');
 });
 
 Route::get('/dashboard', function () {
@@ -26,9 +26,9 @@ Route::get('/dashboard', function () {
 Route::middleware('auth')->group(function () {
 
     Route::get('/files', [FileController::class, 'downloadedFiles'])
-->name('files.downloadedFiles');
-Route::delete('/files/{id}', [FileController::class, 'destroy'])
-->name('files.destroy')->where('id', '\d+');
+        ->name('files.downloadedFiles');
+    Route::delete('/files/{id}', [FileController::class, 'destroy'])
+        ->name('files.destroy')->where('id', '\d+');
 
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -38,14 +38,14 @@ Route::delete('/files/{id}', [FileController::class, 'destroy'])
 
 
 Route::get('/wetransfer', [FileController::class, 'index'])
-->name('files.index');
+    ->name('files.index');
 Route::post('/wetransfer', [FileController::class, 'store'])
-->name('files.store');
+    ->name('files.store');
 Route::get('/success/{id}', [FileController::class, 'show'])
-->name('files.show');
+    ->name('files.show');
 Route::get('/downloadPage/{id}', [FileController::class, 'downloadPage'])
-->name('files.downloadPage');
+    ->name('files.downloadPage');
 Route::get('/files/{unique_link}', [FileController::class, 'download'])
-->name('files.download');
+    ->name('files.download');
 
 require __DIR__ . '/auth.php';

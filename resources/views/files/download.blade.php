@@ -1,26 +1,23 @@
-@extends('layouts.master')
-@section('title' , 'Download')
-@section('content')
+<x-main-layout :title="__('Download')">
 
-<div class="container p-5 vh-100 m-auto rounded bg-light text-center">
+<div class="container p-5 w-50 m-auto rounded bg-light text-center">
 
-  <h2 class="text-primary">Ready when you are</h2>
-  <p class="text-secondary">Transfer expire in 7 days</p>
-  <p class="fs-6">{{$file->title}}</p>
+  <h4 class="text-primary">Ready when you are</h4>
+  <h6 class="text-secondary">Transfer expire in 7 days</h6>
+  <p>{{$file->title}}</p>
   <hr class="my-4 w-50 m-auto">
-  <a class="w-50 mb-2 btn btn-lg rounded btn-primary" href="{{route('files.download' , $file->unique_link)}}" type="submit">
+  <a class="w-50 mb-2 btn rounded btn-primary" href="{{route('files.download' , $file->unique_link)}}" type="submit">
     Download</a>
 
   <hr class="my-4 w-50 m-auto">
-  <div class="details mt-2">
-    <h2>File Details</h2>
+  <div class="details mt-2 w-50 m-auto">
+    <h4 class="mb-3">File Details :</h4>
     @if($file)
-    <p class="text-secondary"><strong class="text-primary">File Name: </strong>{{ $file->title }}</p>
-    <p class="text-secondary"><strong class="text-primary">Message: </strong>{{ $file->message }}</p>
+    <p class="text-secondary text-start"><strong>File Name: </strong>{{ $file->title }}</p>
+    <p class="text-secondary text-start"><strong>Message: </strong>{{ $file->message }}</p>
     @endif
   </div>
-  <a class="w-50 mb-2 btn rounded btn-outline-primary" href="{{route('files.index')}}" type="submit">give it another try</a>
+  <a class="w-50 mb-2" href="{{route('files.index')}}" type="submit">give it another try?</a>
 
 </div>
-
-@endsection
+</x-main-layout>
