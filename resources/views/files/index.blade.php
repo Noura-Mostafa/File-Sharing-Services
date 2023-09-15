@@ -7,13 +7,13 @@
   <form class="" action="{{route('files.store')}}" method="post" enctype="multipart/form-data">
     @csrf
     <div class="form-floating mb-3">
-      <input type="file" name="file" @class(['form-control' , 'is-invalid'=> $errors->has('file')]) id="file">
+      <input type="file" name="file" id="file" @class(['form-control' , 'is-invalid'=> $errors->has('file')])>
       @error('file')
       <div class="invalid-feedback">{{$message}}</div>
       @endError
     </div>
     <div class="form-floating mb-3">
-      <input type="text" name="title" @class(['form-control' , 'is-invalid'=> $errors->has('title')]) id="Tile" placeholder="Title">
+      <input type="text" name="title" id="title" @class(['form-control' , 'is-invalid'=> $errors->has('title')]) placeholder="Title">
       <label for="title">Title</label>
       @error('title')
       <div class="invalid-feedback">{{$message}}</div>
@@ -29,6 +29,5 @@
     <button class="w-50 mb-2 btn rounded btn-primary" type="submit">Get a Link!</button>
   </form>
 </div>
-
 
 </x-main-layout>
