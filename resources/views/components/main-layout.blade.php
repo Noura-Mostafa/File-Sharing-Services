@@ -30,6 +30,15 @@
             document.body.removeChild(tempInput);
 
         }
+
+
+        function updateNameInput() {
+            const fileInput = document.getElementById('file');
+            const nameInput = document.getElementById('title');
+            const fileName = fileInput.files[0].name;
+            nameInput.value = fileName;
+        }
+
     </script>
 
 </head>
@@ -38,7 +47,13 @@
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
         <a class="navbar-brand js-scroll-trigger" href="#page-top">
-            <h4 class="text-white">{{Auth::user()->name ?? ''}}</h4>
+            <h4 class="text-white">
+                @if(Auth::user())
+                Welcome {{Auth::user()->name}}
+                @else
+                <p class="text-white">Welcome to our <br> Website</p>
+                @endif
+            </h4>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarResponsive">

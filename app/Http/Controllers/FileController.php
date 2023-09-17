@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use ZipArchive;
 use App\Models\File;
 use Illuminate\Support\Str;
 use App\Events\DownloadFile;
@@ -21,37 +22,80 @@ class FileController extends Controller
 
     public function store(Request $request)
     {
+       
         $validated = $request->validate(
             [
-                'file' => 'required|file|max:30000',
+                'files.*' => 'required|file|max:30000',
+                'files' => 'required|array',
                 'title' => 'nullable|string|max:255',
                 'message' => 'nullable|string|max:255',
             ],
             $message = [
-                'required'  => ':attributes important',
+                'required'  => ':attribute is important',
                 'file.max' => 'file size is great than 2M',
             ]
         );
 
-        if ($request->hasFile('file')) {
-            $file =  $request->file('file');
-            $filename = $file->getClientOriginalName();
-            $path = $file->storeAs('files', $filename);
+
+        $zipFileName = 'files_' . now()->format('YmdHis') . '.zip';
+        $zipFilePath = 'files/' . $zipFileName; // Relative path
+        
+        $zip = new ZipArchive();
+        if ($zip->open(storage_path('app/' . $zipFilePath), ZipArchive::CREATE) !== true) {
+            return back()->withErrors(['Unable to create zip file']);
         }
+        
+        foreach ($request->file('files') as $index => $file) {
+            $filename = $file->getClientOriginalName();
+            $pathInZip = $filename;
+
+            // Add the file to the zip archive
+            $zip->addFile($file->path(), $pathInZip);
+        }
+
+        $zip->close();
+
+        // Save the zip file to the storage
+        Storage::disk('local')->put($zipFilePath, file_get_contents(storage_path('app/' . $zipFilePath)));
+
+
 
         $uniqueLink = Str::random(8);
         $expirationDate = now()->addDays(7);
 
+
+
         $file = new File;
         $file->title = $filename;
         $file->message = $request->post('message');
-        $file->filepath = $path;
+        $file->filepath = $zipFilePath;
         $file->unique_link = $uniqueLink;
         $file->expiration = $expirationDate;
         if ($id = Auth::id()) {
             $file->user_id = $id;
         }
         $file->save($validated);
+
+
+        // if ($request->hasFile('file')) {
+        //     $file =  $request->file('file');
+        //     $filename = $file->getClientOriginalName();
+        //     $path = $file->storeAs('files', $filename);
+        // }
+
+        // $uniqueLink = Str::random(8);
+        // $expirationDate = now()->addDays(7);
+
+        // $file = new File;
+        // $file->title = $filename;
+        // $file->message = $request->post('message');
+        // $file->filepath = $path;
+        // $file->unique_link = $uniqueLink;
+        // $file->expiration = $expirationDate;
+        // if ($id = Auth::id()) {
+        //     $file->user_id = $id;
+        // }
+        // $file->save($validated);
 
 
         return redirect()->route('files.show', $file->id)
@@ -91,7 +135,7 @@ class FileController extends Controller
     }
 
 
-    public function download(Request $request , $uniqueLink)
+    public function download(Request $request, $uniqueLink)
     {
         $file = File::where('unique_link', $uniqueLink)->first();
 
@@ -103,8 +147,6 @@ class FileController extends Controller
 
 
         return Storage::download($file->filepath);
-
-
     }
 
     public function downloadedFiles()
@@ -124,7 +166,7 @@ class FileController extends Controller
         $file->delete();
 
         if ($file->filepath) {
-            Storage::disk('files')->delete($file->filepath);
+            Storage::disk('local')->delete($file->filepath);
         }
 
         return Redirect::route('files.downloadedFiles')->with('success', 'File deleted');
