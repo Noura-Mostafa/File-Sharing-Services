@@ -22,7 +22,7 @@ class FileController extends Controller
 
     public function store(Request $request)
     {
-       
+
         $validated = $request->validate(
             [
                 'files.*' => 'required|file|max:30000',
@@ -39,12 +39,12 @@ class FileController extends Controller
 
         $zipFileName = 'files_' . now()->format('YmdHis') . '.zip';
         $zipFilePath = 'files/' . $zipFileName; // Relative path
-        
+
         $zip = new ZipArchive();
         if ($zip->open(storage_path('app/' . $zipFilePath), ZipArchive::CREATE) !== true) {
             return back()->withErrors(['Unable to create zip file']);
         }
-        
+
         foreach ($request->file('files') as $index => $file) {
             $filename = $file->getClientOriginalName();
             $pathInZip = $filename;
@@ -113,12 +113,23 @@ class FileController extends Controller
             'id' => $id,
             'unique_link' => $file->unique_link,
         ]);
+        // Define the content you want to share
+        $fileTitle = $file->title;
+        $fileUrl = $fileLink;
+
+        // Generate the WhatsApp share link
+        $whatsappShareUrl = 'https://wa.me/?text=' . urlencode($fileTitle . ': ' . ' ' . $fileUrl);
+
+        // Create a mailto link with pre-filled subject and body
+        $mailtoLink = 'mailto:?subject=' . urlencode($fileTitle) . '&body=' . urlencode($fileUrl);
 
         return View::make('files.show')
             ->with([
                 'id' => $id,
                 'file' => $file,
                 'fileLink' => $fileLink,
+                'whatsappShareUrl' => $whatsappShareUrl,
+                'mailtoLink' => $mailtoLink
             ]);
     }
 
@@ -131,7 +142,12 @@ class FileController extends Controller
             'unique_link' => $file->unique_link,
         ]);
 
-        return View::make('files.download', compact('file', 'fileLink'));
+
+        return View::make('files.download')
+            ->with([
+                'file' => $file,
+                'fileLink' => $fileLink,
+            ]);
     }
 
 
