@@ -37,14 +37,21 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::get('/wetransfer', [FileController::class, 'index'])
+Route::get('/fileSharing', [FileController::class, 'index'])
     ->name('files.index');
-Route::post('/wetransfer', [FileController::class, 'store'])
+
+Route::post('/fileSharing', [FileController::class, 'store'])
     ->name('files.store');
+
 Route::get('/success/{id}', [FileController::class, 'show'])
     ->name('files.show');
+
+Route::get('/file/{file}/show', [FileController::class, 'fileInfo'])
+    ->name('files.fileInfo');
+
 Route::get('/downloadPage/{id}', [FileController::class, 'downloadPage'])
     ->name('files.downloadPage');
+
 Route::get('/files/{unique_link}', [FileController::class, 'download'])
     ->name('files.download');
 

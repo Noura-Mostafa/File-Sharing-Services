@@ -123,7 +123,7 @@ class FileController extends Controller
         // Create a mailto link with pre-filled subject and body
         $mailtoLink = 'mailto:?subject=' . urlencode($fileTitle) . '&body=' . urlencode($fileUrl);
 
-        return View::make('files.show')
+        return View::make('files.success')
             ->with([
                 'id' => $id,
                 'file' => $file,
@@ -150,6 +150,14 @@ class FileController extends Controller
             ]);
     }
 
+    public function fileInfo(File $file)
+    {
+        return view('files.show' ,[
+            'file' => $file
+        ]
+        );
+    }
+
 
     public function download(Request $request, $uniqueLink)
     {
@@ -174,6 +182,9 @@ class FileController extends Controller
 
         return View::make('files.downloadedFiles', compact('files'));
     }
+
+
+
 
     public function destroy($id)
     {

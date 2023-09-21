@@ -17,7 +17,7 @@
                 <button class="btn btn-sm btn-danger me-1" type="submit">Delete</button>
 
             </form>
-            <a class="btn btn-sm btn-dark" type="button" href="{{route('files.show' , $file->id)}}">Show</a>
+            <a class="btn btn-sm btn-dark" type="button" href="{{route('files.fileInfo' , $file->id)}}">Show</a>
         </div>
 
     </div>

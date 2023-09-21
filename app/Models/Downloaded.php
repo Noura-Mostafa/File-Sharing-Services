@@ -16,7 +16,7 @@ class Downloaded extends Model
     protected $keyType = 'string';
     
     protected $fillable = [
-        'file_id' , 'ip' , 'user_agent' , 'time' , 'download_count' , 'country_name'
+        'file_id' , 'ip' , 'user_agent' , 'time' ,  'country_name'
         ,'country_code' , 'created_at'
      ];
 
